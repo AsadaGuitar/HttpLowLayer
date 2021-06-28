@@ -3,37 +3,40 @@ package com.company;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
+import java.util.logging.Logger;
+
 
 public class Server {
 
     public static void main(String[] args) throws IOException {
 
-        System.out.println("start");
+        Logger log = Logger.getLogger("Server.main");
+        log.info("Application Starts");
 
         try (
             ServerSocket serverSocket = new ServerSocket(80);
             Socket socket = serverSocket.accept();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8))
+            InputStream in = socket.getInputStream()
         ){
-            System.out.println("Connect Socket");
+            log.info("CONNECTION STARTS");
 
-            String line = reader.readLine();
-//            StringBuilder header = new StringBuilder();
+            OutputStream out = socket.getOutputStream();
 
-//            System.out.println("header : " + header);
-            System.out.println("line : " + line);
+            int i;
+            while((i = in.read()) != -1){
 
-//            while(line != null && !line.isEmpty()){
-//                header.append(line).append("\n");
-//                line = reader.readLine();
-//            }
+                System.out.println("\nByte Data Is " + i + " By \"Int\"");
+                System.out.println("Byte Data Is " + (char)i + " By \"Char\"");
 
-            PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
-//            writer.println(header);
-            writer.println(line);
+                out.write(i);
+            }
+
+            log.info("Server Sent The Data");
+
+            in.close();
+            out.close();
         }
 
-        System.out.println("finish");
+        log.info("Quit The Application.");
     }
 }
